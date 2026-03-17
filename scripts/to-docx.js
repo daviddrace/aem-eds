@@ -126,7 +126,7 @@ function convertBlocksToTables(html) {
       (cells) => `<tr>${cells.map((c) => `<td>${c || '&nbsp;'}</td>`).join('')}</tr>`,
     );
 
-    const table = `<table border="1">${headerRow}${bodyRows.join('')}</table>`;
+    const table = `<p>&nbsp;</p><table border="1">${headerRow}${bodyRows.join('')}</table><p>&nbsp;</p>`;
     result = result.slice(0, match.index) + table + result.slice(blockEnd);
   });
 
