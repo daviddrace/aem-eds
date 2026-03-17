@@ -1,4 +1,71 @@
 /* stylelint-disable max-line-length */
+
+/* Colgate brand fonts */
+@font-face {
+  font-family: colgate-ready;
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('../fonts/ColgateReadyWeb-Heavy.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: colgate-ready;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/ColgateReadyWeb-Bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: montserrat;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/montserrat-regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: montserrat;
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../fonts/montserrat-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: montserrat;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/montserrat-700.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: open-sans;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/open-sans-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: open-sans;
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../fonts/open-sans-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: open-sans;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../fonts/open-sans-700.woff2') format('woff2');
+}
+
+/* Fallback fonts */
 @font-face {
   font-family: roboto-condensed;
   font-style: normal;

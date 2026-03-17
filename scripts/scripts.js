@@ -75,6 +75,25 @@ function buildAutoBlocks(main) {
 }
 
 /**
+ * Groups sidebar blocks in article-with-sidebar sections into a single
+ * .article-sidebar div so they stack cleanly in a flex layout.
+ * Must run after decorateBlocks so block wrapper divs already exist.
+ * @param {Element} main The container element
+ */
+function decorateArticleLayout(main) {
+  main.querySelectorAll('.section.article-with-sidebar').forEach((section) => {
+    const sidebarItems = [...section.children].filter(
+      (el) => !el.classList.contains('default-content-wrapper'),
+    );
+    if (sidebarItems.length === 0) return;
+    const sidebar = document.createElement('div');
+    sidebar.classList.add('article-sidebar');
+    section.append(sidebar);
+    sidebarItems.forEach((item) => sidebar.append(item));
+  });
+}
+
+/**
  * Decorates formatted links to style them as buttons.
  * @param {HTMLElement} main The main container element
  */
@@ -124,6 +143,7 @@ export function decorateMain(main) {
   decorateSections(main);
   decorateBlocks(main);
   decorateButtons(main);
+  decorateArticleLayout(main);
 }
 
 /**
