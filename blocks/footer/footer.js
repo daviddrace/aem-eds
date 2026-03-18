@@ -1,5 +1,4 @@
 import { getMetadata } from '../../scripts/aem.js';
-import { loadFragment } from '../fragment/fragment.js';
 
 /**
  * loads and decorates the footer
@@ -9,12 +8,31 @@ export default async function decorate(block) {
   // load footer as fragment
   const footerMeta = getMetadata('footer');
   const footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : '/footer';
-  const fragment = await loadFragment(footerPath);
+
+  let fragment = null;
+  try {
+    const resp = await fetch(`${footerPath}.plain.html`);
+    if (resp.ok) {
+      const html = await resp.text();
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      fragment = temp;
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn(`Failed to load footer fragment from ${footerPath}:`, e);
+  }
 
   // decorate footer DOM
   block.textContent = '';
   const footer = document.createElement('div');
   footer.classList.add('footer');
+
+  if (!fragment) {
+    // Fragment failed to load, create empty footer
+    block.append(footer);
+    return;
+  }
 
   // Transform ul > li structure into columns
   const ul = fragment.querySelector('ul');

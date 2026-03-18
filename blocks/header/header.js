@@ -1,5 +1,4 @@
 import { getMetadata } from '../../scripts/aem.js';
-import { loadFragment } from '../fragment/fragment.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 900px)');
@@ -116,15 +115,46 @@ export default async function decorate(block) {
   // load nav as fragment
   const navMeta = getMetadata('nav');
   const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';
-  const fragment = await loadFragment(navPath);
+
+  let fragment = null;
+  try {
+    const resp = await fetch(`${navPath}.plain.html`);
+    if (resp.ok) {
+      const html = await resp.text();
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      fragment = temp;
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn(`Failed to load nav fragment from ${navPath}:`, e);
+  }
 
   // decorate nav DOM
   block.textContent = '';
   const nav = document.createElement('nav');
   nav.id = 'nav';
 
+  if (!fragment) {
+    // Fragment failed to load, create empty nav
+    const navWrapper = document.createElement('div');
+    navWrapper.className = 'nav-wrapper';
+    navWrapper.append(nav);
+    block.append(navWrapper);
+    return;
+  }
+
   // Extract brand (first p), sections (ul), and tools (last p) from fragment
-  const fragmentChildren = [...fragment.children];
+  const fragmentChildren = fragment ? [...fragment.children] : [];
+  if (fragmentChildren.length === 0) {
+    // Fragment has no children, create empty nav
+    const navWrapper = document.createElement('div');
+    navWrapper.className = 'nav-wrapper';
+    navWrapper.append(nav);
+    block.append(navWrapper);
+    return;
+  }
+
   const brand = fragmentChildren.find((el) => el.tagName === 'P');
   const sections = fragmentChildren.find((el) => el.tagName === 'UL');
   const tools = fragmentChildren.filter((el) => el.tagName === 'P').pop();
