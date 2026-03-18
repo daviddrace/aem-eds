@@ -14,7 +14,45 @@ export default async function decorate(block) {
   // decorate footer DOM
   block.textContent = '';
   const footer = document.createElement('div');
-  while (fragment.firstElementChild) footer.append(fragment.firstElementChild);
+  footer.classList.add('footer');
+
+  // Transform ul > li structure into columns
+  const ul = fragment.querySelector('ul');
+  if (ul) {
+    const section = document.createElement('div');
+    section.classList.add('section');
+
+    // Each top-level li becomes a column
+    ul.querySelectorAll(':scope > li').forEach((li) => {
+      const column = document.createElement('div');
+
+      // If li has text content before nested ul, make it a heading
+      const text = li.childNodes[0]?.textContent?.trim();
+      if (text && text.length > 0) {
+        const heading = document.createElement('strong');
+        heading.textContent = text;
+        column.append(heading);
+      }
+
+      // Nested ul becomes the column content
+      const nestedUl = li.querySelector('ul');
+      if (nestedUl) {
+        column.append(nestedUl.cloneNode(true));
+      }
+
+      section.append(column);
+    });
+
+    footer.append(section);
+  }
+
+  // Copyright/legal section at bottom
+  const copyrightSection = document.createElement('div');
+  copyrightSection.classList.add('section');
+  const copyrightDiv = document.createElement('div');
+  copyrightDiv.textContent = '© 2025 Colgate-Palmolive Company. All rights reserved.';
+  copyrightSection.append(copyrightDiv);
+  footer.append(copyrightSection);
 
   block.append(footer);
 }
