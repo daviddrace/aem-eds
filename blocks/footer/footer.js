@@ -44,11 +44,22 @@ export default async function decorate(block) {
     ul.querySelectorAll(':scope > li').forEach((li) => {
       const column = document.createElement('div');
 
-      // If li has text content before nested ul, make it a heading
-      const text = li.childNodes[0]?.textContent?.trim();
-      if (text && text.length > 0) {
+      // Extract heading text (text before nested ul)
+      let headingText = '';
+      Array.from(li.childNodes).some((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          headingText += node.textContent.trim();
+        } else if (node.tagName === 'UL') {
+          return true; // Stop at first ul
+        } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'UL') {
+          headingText += node.textContent.trim();
+        }
+        return false;
+      });
+
+      if (headingText) {
         const heading = document.createElement('strong');
-        heading.textContent = text;
+        heading.textContent = headingText;
         column.append(heading);
       }
 
