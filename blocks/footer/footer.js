@@ -84,4 +84,5 @@ export default async function decorate(block) {
   footer.append(copyrightSection);
 
   block.append(footer);
+  block.setAttribute('data-block-status', 'loaded');
 }
