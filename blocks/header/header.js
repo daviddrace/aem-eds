@@ -141,17 +141,25 @@ export default async function decorate(block) {
     navWrapper.className = 'nav-wrapper';
     navWrapper.append(nav);
     block.append(navWrapper);
+    block.setAttribute('data-block-status', 'loaded');
     return;
   }
 
   // Extract brand (first p), sections (ul), and tools (last p) from fragment
-  const fragmentChildren = fragment ? [...fragment.children] : [];
+  // Fragment may be wrapped in a div, so unwrap if needed
+  let fragmentChildren = [...fragment.children];
+  if (fragmentChildren.length === 1 && fragmentChildren[0].tagName === 'DIV') {
+    // Unwrap the div container
+    fragmentChildren = [...fragmentChildren[0].children];
+  }
+
   if (fragmentChildren.length === 0) {
     // Fragment has no children, create empty nav
     const navWrapper = document.createElement('div');
     navWrapper.className = 'nav-wrapper';
     navWrapper.append(nav);
     block.append(navWrapper);
+    block.setAttribute('data-block-status', 'loaded');
     return;
   }
 
@@ -164,22 +172,67 @@ export default async function decorate(block) {
   if (brand) {
     const brandDiv = document.createElement('div');
     brandDiv.classList.add('nav-brand');
-    brandDiv.append(brand.cloneNode(true));
+    const brandCopy = brand.cloneNode(true);
+    const brandLink = brandCopy.querySelector('a');
+    if (brandLink) {
+      const logo = document.createElement('img');
+      logo.src = `${window.hlx.codeBasePath}/icons/colgate-logo.svg`;
+      logo.alt = 'Colgate';
+      brandLink.textContent = '';
+      brandLink.append(logo);
+    }
+    brandDiv.append(brandCopy);
     nav.append(brandDiv);
   }
 
   if (sections) {
     sectionsDiv = document.createElement('div');
     sectionsDiv.classList.add('nav-sections');
-    sectionsDiv.append(sections.cloneNode(true));
+    const sectionsCopy = sections.cloneNode(true);
+    const sectionsWrapper = document.createElement('div');
+    sectionsWrapper.classList.add('default-content-wrapper');
+    sectionsWrapper.append(sectionsCopy);
+    sectionsDiv.append(sectionsWrapper);
     nav.append(sectionsDiv);
 
-    // Decorate nav items with dropdowns
-    sectionsDiv.querySelectorAll(':scope > ul > li').forEach((navSection) => {
-      if (navSection.querySelector('ul')) {
+    // Decorate nav items with dropdowns and wrap text in anchors
+    sectionsDiv.querySelectorAll(':scope .default-content-wrapper > ul > li').forEach((navSection) => {
+      const nestedUl = navSection.querySelector('ul');
+
+      // Extract text content before nested ul
+      let itemText = '';
+      Array.from(navSection.childNodes).some((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          itemText += node.textContent.trim();
+        } else if (node.tagName === 'UL') {
+          return true; // break
+        } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'UL') {
+          itemText += node.textContent.trim();
+        }
+        return false;
+      });
+
+      // Create anchor tag for the item
+      if (itemText && !navSection.querySelector(':scope > a')) {
+        const anchor = document.createElement('a');
+        anchor.href = '#';
+        anchor.textContent = itemText;
+
+        // Remove old text nodes and elements (except nested ul)
+        Array.from(navSection.childNodes).forEach((node) => {
+          if (node.nodeType === Node.TEXT_NODE || (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'UL')) {
+            node.remove();
+          }
+        });
+
+        navSection.prepend(anchor);
+      }
+
+      if (nestedUl) {
         navSection.classList.add('nav-drop');
         navSection.setAttribute('aria-expanded', 'false');
       }
+
       navSection.addEventListener('click', () => {
         if (isDesktop.matches) {
           const expanded = navSection.getAttribute('aria-expanded') === 'true';
@@ -188,22 +241,22 @@ export default async function decorate(block) {
         }
       });
     });
-
-    // Remove bullet points from nav lists
-    sectionsDiv.querySelectorAll('ul').forEach((ul) => {
-      ul.style.listStyle = 'none';
-      ul.style.margin = '0';
-      ul.style.padding = '0';
-    });
-    sectionsDiv.querySelectorAll('li').forEach((li) => {
-      li.style.listStyle = 'none';
-    });
   }
 
   if (tools) {
     const toolsDiv = document.createElement('div');
     toolsDiv.classList.add('nav-tools');
-    toolsDiv.append(tools.cloneNode(true));
+    const toolsCopy = tools.cloneNode(true);
+    const toolLink = toolsCopy.querySelector('a');
+    if (toolLink) {
+      const icon = document.createElement('img');
+      icon.src = `${window.hlx.codeBasePath}/icons/search.svg`;
+      icon.alt = 'Search';
+      toolLink.textContent = '';
+      toolLink.append(icon);
+      toolLink.setAttribute('aria-label', 'Search');
+    }
+    toolsDiv.append(toolsCopy);
     nav.append(toolsDiv);
   }
 
