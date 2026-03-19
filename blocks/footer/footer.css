@@ -4,7 +4,7 @@ footer {
   font-size: var(--body-font-size-xs);
 }
 
-footer .footer > div > .section {
+footer .footer > .section {
   margin: auto;
   max-width: 1200px;
   padding: 40px 24px 24px;
@@ -42,20 +42,20 @@ footer .footer ul li {
 }
 
 @media (width >= 900px) {
-  footer .footer > div > .section:first-child {
+  footer .footer > .footer-columns {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 40px;
     padding: 48px 32px 32px;
   }
 
-  footer .footer > div > .section:first-child > div {
+  footer .footer > .footer-columns > .footer-column {
     padding: 0;
     max-width: unset;
     margin: 0;
   }
 
-  footer .footer > div > .section:last-child {
+  footer .footer > .footer-legal {
     padding: 16px 32px;
     border-top: 1px solid rgb(255 255 255 / 20%);
     display: flex;

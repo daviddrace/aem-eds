@@ -25,64 +25,50 @@ export default async function decorate(block) {
 
   // decorate footer DOM
   block.textContent = '';
-  const footer = document.createElement('div');
-  footer.classList.add('footer');
 
   if (!fragment) {
-    // Fragment failed to load, create empty footer
-    block.append(footer);
     return;
   }
 
-  // Transform ul > li structure into columns
-  const ul = fragment.querySelector('ul');
-  if (ul) {
-    const section = document.createElement('div');
-    section.classList.add('section');
+  // Parse fragment (p + ul pairs for columns, last few p for copyright/legal)
+  const section = document.createElement('div');
+  section.classList.add('section', 'footer-columns');
 
-    // Each top-level li becomes a column
-    ul.querySelectorAll(':scope > li').forEach((li) => {
-      const column = document.createElement('div');
+  let currentColumn = null;
+  const copyrightElements = [];
 
-      // Extract heading text (text before nested ul)
-      let headingText = '';
-      Array.from(li.childNodes).some((node) => {
-        if (node.nodeType === Node.TEXT_NODE) {
-          headingText += node.textContent.trim();
-        } else if (node.tagName === 'UL') {
-          return true; // Stop at first ul
-        } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'UL') {
-          headingText += node.textContent.trim();
-        }
-        return false;
-      });
+  // fragment is wrapped in a div, so look at its children
+  const children = fragment.children.length === 1 && fragment.children[0].tagName === 'DIV'
+    ? Array.from(fragment.children[0].children)
+    : Array.from(fragment.children);
 
-      if (headingText) {
-        const heading = document.createElement('strong');
-        heading.textContent = headingText;
-        column.append(heading);
+  children.forEach((el) => {
+    if (el.tagName === 'P') {
+      if (el.textContent.includes('Copyright') || (el.querySelector('a') && el.textContent.includes('|'))) {
+        // Likely copyright or legal links
+        copyrightElements.push(el.cloneNode(true));
+      } else {
+        // New column heading
+        currentColumn = document.createElement('div');
+        currentColumn.classList.add('footer-column');
+        currentColumn.append(el.cloneNode(true));
+        section.append(currentColumn);
       }
+    } else if (el.tagName === 'UL' && currentColumn) {
+      // Links for the current column
+      currentColumn.append(el.cloneNode(true));
+    }
+  });
 
-      // Nested ul becomes the column content
-      const nestedUl = li.querySelector('ul');
-      if (nestedUl) {
-        column.append(nestedUl.cloneNode(true));
-      }
+  block.append(section);
 
-      section.append(column);
-    });
-
-    footer.append(section);
+  if (copyrightElements.length > 0) {
+    const copyrightSection = document.createElement('div');
+    copyrightSection.classList.add('section', 'footer-legal');
+    copyrightElements.forEach((el) => copyrightSection.append(el));
+    block.append(copyrightSection);
   }
 
-  // Copyright/legal section at bottom
-  const copyrightSection = document.createElement('div');
-  copyrightSection.classList.add('section');
-  const copyrightDiv = document.createElement('div');
-  copyrightDiv.textContent = '© 2025 Colgate-Palmolive Company. All rights reserved.';
-  copyrightSection.append(copyrightDiv);
-  footer.append(copyrightSection);
-
-  block.append(footer);
+  // Required by AEM boilerplate styles to make the block visible
   block.setAttribute('data-block-status', 'loaded');
 }
