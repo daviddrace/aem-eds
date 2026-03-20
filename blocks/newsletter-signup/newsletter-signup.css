@@ -1,16 +1,94 @@
 .newsletter-signup {
-  padding: 40px 0;
+    padding: 0;
+    position: relative;
+    /* Ensure block takes up space */
+    min-height: 500px;
 }
 
-.newsletter-signup .newsletter-signup-placeholder {
-  min-height: 200px;
-  background-color: var(--light-color);
-  border-radius: 4px;
+.newsletter-signup-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.newsletter-signup .newsletter-signup-iframe {
-  width: 100%;
-  border: none;
-  height: 600px;
-  display: block;
+/* Background Image Area */
+.newsletter-bg-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 30%; /* Mobile: 30% height */
+    z-index: 0;
+    overflow: hidden;
+}
+
+.newsletter-bg-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Content Area (Iframe wrapper) */
+.newsletter-content {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-top: 15%; /* Overlap slightly with the 30% image area */
+}
+
+.newsletter-signup-placeholder {
+    min-height: 200px;
+    background-color: var(--light-color);
+    border-radius: 24px;
+}
+
+.newsletter-signup-iframe {
+    width: 100%;
+    border: none;
+    min-height: 600px; /* Default height before load */
+    display: block;
+    background-color: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgb(0 0 0 / 8%);
+}
+
+/* Desktop Layout */
+@media (width >= 1000px) {
+    .newsletter-signup-container {
+        flex-direction: row;
+        align-items: center;
+        min-height: 500px;
+    }
+
+    .newsletter-bg-image {
+        width: 50%;
+        height: 100%;
+        right: auto;
+        left: 0;
+        bottom: 0;
+        border-radius: 24px 0 0 24px; /* Optional: round left corners of image */
+    }
+
+    .newsletter-content {
+        margin-top: 0;
+        margin-left: 45%; /* Overlap the image by 5% */
+        width: 55%; /* Take up remaining space + overlap */
+        padding: 40px;
+        padding-left: 0;
+    }
+
+    .newsletter-signup-iframe {
+        margin-left: 0; /* Align to left of content area */
+        max-width: 600px; /* Don't get too wide on huge screens */
+    }
+}
+
+/* Support for background color outside image */
+/* This effectively makes the block transparent so the section-metadata background shows through */
+.newsletter-signup.has-bg-image {
+    background-color: transparent;
 }

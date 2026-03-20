@@ -352,6 +352,10 @@ main .section.highlight {
     padding: 40px 0;
 }
 
+main .section.bg-brand-light {
+    background-color: var(--brand-color-light);
+}
+
 /* article page — two-column layout with sidebar
  * decorateSections wraps each content group in its own div, so the
  * section's direct children are:

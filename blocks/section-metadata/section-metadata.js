@@ -24,6 +24,10 @@ export default function decorate(block) {
           section.classList.add(style.trim());
         });
       }
+
+      if (key === 'background' && value) {
+        section.classList.add(`bg-${value.trim()}`);
+      }
     }
   });
 
