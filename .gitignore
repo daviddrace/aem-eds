@@ -12,3 +12,5 @@ drafts/*.docx
 # Ensure these files are tracked
 !CLAUDE.md
 !AGENTS.md
+
+screenshots/
