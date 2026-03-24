@@ -75,6 +75,21 @@ async function loadRatingsAsync(block) {
 }
 
 export default async function decorate(block) {
+  // Universal Editor instrumentation
+  block.setAttribute('data-aue-type', 'component');
+  block.setAttribute('data-aue-label', 'Related Products');
+  block.setAttribute('data-aue-model', 'related-products');
+
+  const configRow = block.querySelector(':scope > div');
+  if (configRow) {
+    const configCell = configRow.querySelector('div');
+    if (configCell) {
+      configCell.setAttribute('data-aue-prop', 'tags');
+      configCell.setAttribute('data-aue-type', 'text');
+      configCell.setAttribute('data-aue-label', 'Product Tags');
+    }
+  }
+
   const tags = block.querySelector('div > div')?.textContent?.trim() || '';
   block.textContent = '';
 

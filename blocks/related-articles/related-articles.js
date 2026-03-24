@@ -52,6 +52,21 @@ function buildCard(article) {
 }
 
 export default async function decorate(block) {
+  // Universal Editor instrumentation
+  block.setAttribute('data-aue-type', 'component');
+  block.setAttribute('data-aue-label', 'Related Articles');
+  block.setAttribute('data-aue-model', 'related-articles');
+
+  const configRow = block.querySelector(':scope > div');
+  if (configRow) {
+    const configCell = configRow.querySelector('div');
+    if (configCell) {
+      configCell.setAttribute('data-aue-prop', 'tags');
+      configCell.setAttribute('data-aue-type', 'text');
+      configCell.setAttribute('data-aue-label', 'Tags Filter');
+    }
+  }
+
   const tags = block.querySelector('div > div')?.textContent?.trim() || '';
   block.textContent = '';
 

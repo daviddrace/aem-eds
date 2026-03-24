@@ -112,6 +112,11 @@ function toggleMenu(nav, navSections, forceExpanded = null) {
  * @param {Element} block The header block element
  */
 export default async function decorate(block) {
+  // Universal Editor instrumentation
+  block.setAttribute('data-aue-type', 'component');
+  block.setAttribute('data-aue-label', 'Header');
+  block.setAttribute('data-aue-model', 'header');
+
   // load nav as fragment
   const navMeta = getMetadata('nav');
   const navPath = navMeta ? new URL(navMeta, window.location).pathname : '/nav';

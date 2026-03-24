@@ -5,6 +5,11 @@ import { getMetadata } from '../../scripts/aem.js';
  * @param {Element} block The footer block element
  */
 export default async function decorate(block) {
+  // Universal Editor instrumentation
+  block.setAttribute('data-aue-type', 'component');
+  block.setAttribute('data-aue-label', 'Footer');
+  block.setAttribute('data-aue-model', 'footer');
+
   // load footer as fragment
   const footerMeta = getMetadata('footer');
   const footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : '/footer';

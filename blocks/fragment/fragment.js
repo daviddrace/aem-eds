@@ -43,6 +43,11 @@ export async function loadFragment(path) {
 }
 
 export default async function decorate(block) {
+  // Universal Editor instrumentation
+  block.setAttribute('data-aue-type', 'component');
+  block.setAttribute('data-aue-label', 'Fragment');
+  block.setAttribute('data-aue-model', 'fragment');
+
   const link = block.querySelector('a');
   const path = link ? link.getAttribute('href') : block.textContent.trim();
   const fragment = await loadFragment(path);

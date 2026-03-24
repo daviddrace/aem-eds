@@ -10,6 +10,12 @@
  * @param {Element} block
  */
 export default function decorate(block) {
+  // Universal Editor instrumentation
+  block.setAttribute('data-aue-type', 'component');
+  block.setAttribute('data-aue-label', 'Newsletter Signup');
+  block.setAttribute('data-aue-prop', 'newsletter');
+  block.setAttribute('data-aue-resource', `urn:aemconnection:${block.id}`); // hypothetical resource ID
+
   // Parse the block content
   const children = [...block.children];
   const firstRow = children[0];
