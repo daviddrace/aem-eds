@@ -1,0 +1,23 @@
+.section div.person-card-wrapper {
+  display: block;
+  max-width:400px;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 12px;
+  border: solid 1px #eee;
+}
+
+.person-card-label{
+  display:none;
+}
+
+.person-card-value, .person-card-value > *{
+  margin:0;
+}
+
+.person-card .person-name {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+
