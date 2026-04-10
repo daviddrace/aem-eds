@@ -1,0 +1,5 @@
+{
+  "scripts": [
+    "set ACL for anonymous\n  allow jcr:read on /content/colgate-poc\nend"
+  ]
+}
