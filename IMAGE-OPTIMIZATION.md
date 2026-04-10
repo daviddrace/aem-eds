@@ -9,44 +9,65 @@ This project includes a reusable image optimization utility that automatically r
 The simplest way to optimize images is using predefined breakpoint presets:
 
 ```js
-import { optimizeImages } from '../../scripts/image-utils.js';
+import { optimizeImages } from "../../scripts/image-utils.js";
 
 export default function decorate(block) {
   // Optimize all images in the block using the 'card' preset
-  optimizeImages(block, 'card');
-  
+  optimizeImages(block, "card");
+
   // ... rest of your decoration logic
 }
 ```
 
 ### Available Presets
 
-| Preset | Use Case | Desktop Width | Mobile Width |
-|--------|----------|---------------|--------------|
-| `hero` | Full-width hero images | 2400px | 1200px |
-| `content` | Article body images | 1500px | 1200px |
-| `card` | Card/thumbnail images (300-400px display) | 800px | 800px |
-| `thumbnail` | Small avatars/icons (100-200px display) | 400px | 400px |
-| `sidebar` | Sidebar images | 600px | 800px |
+| Preset      | Use Case                                  | Desktop Width | Mobile Width |
+| ----------- | ----------------------------------------- | ------------- | ------------ |
+| `hero`      | Full-width hero images                    | 2400px        | 1200px       |
+| `content`   | Article body images                       | 1500px        | 1200px       |
+| `card`      | Card/thumbnail images (300-400px display) | 800px         | 800px        |
+| `thumbnail` | Small avatars/icons (100-200px display)   | 400px         | 400px        |
+| `sidebar`   | Sidebar images                            | 600px         | 800px        |
 
 **Note:** All widths are 2x the typical display size to support retina displays.
 
 ## Advanced Usage
 
-### Custom Breakpoints
+### Custom Breakpoints (Recommended)
 
-For fine-grained control, use custom breakpoints:
+For custom image sizes, use `optimizeImageByDisplaySize` - just specify how wide the image appears on screen:
 
 ```js
-import { optimizeImage } from '../../scripts/image-utils.js';
+import { optimizeImageByDisplaySize } from "../../scripts/image-utils.js";
 
 export default function decorate(block) {
-  const img = block.querySelector('img');
-  
+  const img = block.querySelector("img");
+
+  // Specify display widths - function automatically applies 2x for retina
+  optimizeImageByDisplaySize(img, [
+    { breakpoint: "(min-width: 900px)", displayWidth: 600 }, // Desktop: shows at 600px
+    { breakpoint: "(min-width: 600px)", displayWidth: 450 }, // Tablet: shows at 450px
+    { displayWidth: 300 }, // Mobile: shows at 300px
+  ]);
+  // This will request: 1200px (desktop), 900px (tablet), 600px (mobile)
+}
+```
+
+### Low-Level API (Advanced)
+
+If you need to bypass retina multiplier or have pre-calculated widths:
+
+```js
+import { optimizeImage } from "../../scripts/image-utils.js";
+
+export default function decorate(block) {
+  const img = block.querySelector("img");
+
+  // Specify exact request widths (no automatic multiplier)
   optimizeImage(img, [
-    { media: '(min-width: 900px)', width: '1200' }, // Desktop
-    { media: '(min-width: 600px)', width: '900' },  // Tablet
-    { width: '600' },                                // Mobile
+    { media: "(min-width: 900px)", width: "1200" }, // Request 1200px
+    { media: "(min-width: 600px)", width: "900" }, // Request 900px
+    { width: "600" }, // Request 600px
   ]);
 }
 ```
@@ -56,8 +77,23 @@ export default function decorate(block) {
 For above-the-fold images that affect Largest Contentful Paint:
 
 ```js
-// Optimize with eager loading (no lazy loading)
-optimizeImages(block, 'hero', true); // Third parameter = eager
+// With presets
+optimizeImages(block, "hero", true); // Third parameter = eager
+
+// With custom sizes
+optimizeImageByDisplaySize(img, [{ displayWidth: 1200 }], { eager: true });
+```
+
+### Override Retina Multiplier
+
+Control the multiplier for different use cases:
+
+```js
+// 3x for very high-DPI displays
+optimizeImageByDisplaySize(img, [{ displayWidth: 400 }], { multiplier: 3 }); // Requests 1200px
+
+// 1x to save bandwidth (not recommended for most cases)
+optimizeImageByDisplaySize(img, [{ displayWidth: 400 }], { multiplier: 1 }); // Requests 400px
 ```
 
 ## How It Works
@@ -77,18 +113,28 @@ The optimization utility:
 ```html
 <picture>
   <!-- WebP sources for modern browsers -->
-  <source media="(min-width: 600px)" type="image/webp" 
-          srcset="image.png?width=800&format=webply&optimize=medium">
-  <source type="image/webp" 
-          srcset="image.png?width=800&format=webply&optimize=medium">
-  
+  <source
+    media="(min-width: 600px)"
+    type="image/webp"
+    srcset="image.png?width=800&format=webply&optimize=medium"
+  />
+  <source
+    type="image/webp"
+    srcset="image.png?width=800&format=webply&optimize=medium"
+  />
+
   <!-- Fallback for older browsers -->
-  <source media="(min-width: 600px)" 
-          srcset="image.png?width=800&format=png&optimize=medium">
-  
+  <source
+    media="(min-width: 600px)"
+    srcset="image.png?width=800&format=png&optimize=medium"
+  />
+
   <!-- Final fallback -->
-  <img src="image.png?width=800&format=png&optimize=medium" 
-       alt="Description" loading="lazy">
+  <img
+    src="image.png?width=800&format=png&optimize=medium"
+    alt="Description"
+    loading="lazy"
+  />
 </picture>
 ```
 
@@ -97,8 +143,9 @@ The optimization utility:
 ### 1. Choose the Right Preset
 
 Match the preset to your layout:
+
 - **Hero blocks**: Use `hero` preset
-- **Article content**: Use `content` preset  
+- **Article content**: Use `content` preset
 - **Cards/thumbnails**: Use `card` preset
 - **Sidebar widgets**: Use `sidebar` preset
 
@@ -108,8 +155,8 @@ Call `optimizeImages()` at the **start** of your `decorate()` function, before m
 
 ```js
 export default function decorate(block) {
-  optimizeImages(block, 'card'); // Do this first
-  
+  optimizeImages(block, "card"); // Do this first
+
   // Then do other DOM manipulation
   const rows = [...block.children];
   // ...
@@ -119,6 +166,7 @@ export default function decorate(block) {
 ### 3. Use 2x Width for Retina
 
 Always use 2x the display width to ensure crisp images on retina displays:
+
 - Display at 400px? Request 800px
 - Display at 600px? Request 1200px
 
@@ -132,49 +180,64 @@ https://{branch}--{repo}--{owner}.aem.page/{page-path}
 
 ## Examples
 
-### Example 1: Simple Card Block
+### Example 1: Simple Card Block (Preset)
 
 ```js
-import { optimizeImages } from '../../scripts/image-utils.js';
+import { optimizeImages } from "../../scripts/image-utils.js";
 
 export default function decorate(block) {
-  optimizeImages(block, 'card');
-  
+  // Use preset for standard card size
+  optimizeImages(block, "card");
+
   // Add card styling
-  block.querySelectorAll('img').forEach((img) => {
-    img.closest('div').classList.add('card-image');
+  block.querySelectorAll("img").forEach((img) => {
+    img.closest("div").classList.add("card-image");
   });
 }
 ```
 
-### Example 2: Hero Block with Eager Loading
+### Example 2: Person Card (Custom Display Size)
 
 ```js
-import { optimizeImages } from '../../scripts/image-utils.js';
+import { optimizeImageByDisplaySize } from "../../scripts/image-utils.js";
 
 export default function decorate(block) {
-  // Hero images affect LCP, so load eagerly
-  optimizeImages(block, 'hero', true);
-  
-  // Rest of hero decoration...
+  const img = block.querySelector("img");
+
+  // Card displays at 400px - simple and clear!
+  optimizeImageByDisplaySize(img, [{ displayWidth: 400 }]);
+  // Automatically requests 800px for retina
 }
 ```
 
-### Example 3: Custom Breakpoints for Specific Layout
+### Example 3: Responsive Article Image
 
 ```js
-import { optimizeImage } from '../../scripts/image-utils.js';
+import { optimizeImageByDisplaySize } from "../../scripts/image-utils.js";
 
 export default function decorate(block) {
-  const img = block.querySelector('img');
-  
-  // Custom breakpoints for a unique layout
-  optimizeImage(img, [
-    { media: '(min-width: 1200px)', width: '1600' }, // Large desktop
-    { media: '(min-width: 900px)', width: '1200' },  // Desktop
-    { media: '(min-width: 600px)', width: '900' },   // Tablet
-    { width: '600' },                                 // Mobile
+  const img = block.querySelector("img");
+
+  // Different display sizes at different breakpoints
+  optimizeImageByDisplaySize(img, [
+    { breakpoint: "(min-width: 900px)", displayWidth: 750 }, // Desktop: 750px
+    { breakpoint: "(min-width: 600px)", displayWidth: 600 }, // Tablet: 600px
+    { displayWidth: 400 }, // Mobile: 400px
   ]);
+  // Requests: 1500px, 1200px, 800px (all 2x for retina)
+}
+```
+
+### Example 4: Hero Block with Eager Loading
+
+```js
+import { optimizeImages } from "../../scripts/image-utils.js";
+
+export default function decorate(block) {
+  // Hero images affect LCP, so load eagerly
+  optimizeImages(block, "hero", true);
+
+  // Rest of hero decoration...
 }
 ```
 
@@ -186,6 +249,7 @@ Proper image optimization can reduce image file sizes by **60-80%**:
 - **After**: 800x800px WebP (150 KB)
 
 This dramatically improves:
+
 - **Page load time** (especially on mobile)
 - **Largest Contentful Paint (LCP)** score
 - **Bandwidth usage** for users
@@ -199,6 +263,7 @@ Image optimization only works on deployed environments (`*.aem.live`, `*.aem.pag
 ### Wrong image size being loaded?
 
 Check browser DevTools Network tab:
+
 1. Look for the image request
 2. Verify the URL includes `?width=800&format=webply`
 3. Check which `<source>` element the browser selected (based on media queries)
@@ -209,8 +274,8 @@ Use custom breakpoints instead of presets:
 
 ```js
 optimizeImage(img, [
-  { media: '(min-width: 900px)', width: '1200' },
-  { width: '600' }
+  { media: "(min-width: 900px)", width: "1200" },
+  { width: "600" },
 ]);
 ```
 

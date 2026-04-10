@@ -1,4 +1,4 @@
-import { optimizeImage } from '../../scripts/image-utils.js';
+import { optimizeImageByDisplaySize } from '../../scripts/image-utils.js';
 
 /**
  * person-card block — card element with information about a person
@@ -79,14 +79,13 @@ export default function decorate(block) {
       }
     }
 
-    // Image: Replace with optimized picture using custom breakpoints
-    // Person card max-width is 400px, so we use 800px (2x for retina) for all sizes
+    // Image: Optimize based on display size (card max-width is 400px)
+    // The function automatically applies 2x multiplier for retina displays
     if (key === 'image') {
       const img = valueCell.querySelector('img');
       if (img) {
-        optimizeImage(img, [
-          { media: '(min-width: 600px)', width: '800' }, // Desktop: 2x 400px
-          { width: '800' }, // Mobile: same size (card doesn't shrink much)
+        optimizeImageByDisplaySize(img, [
+          { displayWidth: 400 }, // Card displays at 400px (will request 800px for retina)
         ]);
       }
     }

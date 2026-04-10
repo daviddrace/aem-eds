@@ -109,3 +109,62 @@ export function optimizeImage(img, breakpoints, eager = false) {
 
   return optimizedPicture;
 }
+
+/**
+ * Optimizes an image based on expected display sizes at different breakpoints.
+ * Automatically applies retina multiplier to ensure crisp images on high-DPI screens.
+ *
+ * This is the recommended API for most use cases - just specify how wide the image
+ * will appear on screen, and the function handles the rest.
+ *
+ * @param {Element} img - The image element to optimize
+ * @param {Array} displaySizes - Array of display size configurations
+ * @param {Object} options - Optional configuration
+ * @param {number} options.multiplier - Retina multiplier (default: 2 for 2x displays)
+ * @param {boolean} options.eager - Whether to load eagerly (default: false)
+ * @returns {Element} The optimized picture element
+ *
+ * @example
+ * // Simple: Image displays at 400px on all screens
+ * optimizeImageByDisplaySize(img, [{ displayWidth: 400 }]);
+ *
+ * @example
+ * // Responsive: Different sizes at different breakpoints
+ * optimizeImageByDisplaySize(img, [
+ *   { breakpoint: '(min-width: 900px)', displayWidth: 600 },  // Desktop: 600px
+ *   { breakpoint: '(min-width: 600px)', displayWidth: 450 },  // Tablet: 450px
+ *   { displayWidth: 300 }                                      // Mobile: 300px
+ * ]);
+ *
+ * @example
+ * // Override retina multiplier (e.g., for 3x displays or to save bandwidth)
+ * optimizeImageByDisplaySize(img, [
+ *   { displayWidth: 400 }
+ * ], { multiplier: 3 });
+ *
+ * @example
+ * // Eager loading for LCP images
+ * optimizeImageByDisplaySize(img, [
+ *   { displayWidth: 1200 }
+ * ], { eager: true });
+ */
+export function optimizeImageByDisplaySize(img, displaySizes, options = {}) {
+  const { multiplier = 2, eager = false } = options;
+
+  // Convert display sizes to EDS breakpoint format
+  const breakpoints = displaySizes.map((size) => {
+    const actualWidth = size.displayWidth * multiplier;
+    const breakpoint = {
+      width: String(actualWidth),
+    };
+
+    // Add media query if specified
+    if (size.breakpoint) {
+      breakpoint.media = size.breakpoint;
+    }
+
+    return breakpoint;
+  });
+
+  return optimizeImage(img, breakpoints, eager);
+}
