@@ -2,6 +2,34 @@
 
 This project includes a reusable image optimization utility that automatically resizes images based on their display context, reducing page load times and improving performance.
 
+## Background: Built-in EDS Image Optimization
+
+Edge Delivery Services automatically optimizes images through the `createOptimizedPicture()` function in `scripts/aem.js`. This function:
+
+- **Creates responsive `<picture>` elements** with multiple `<source>` tags for different screen sizes
+- **Converts images to WebP format** for better compression (with fallbacks for older browsers)
+- **Adds optimization parameters** to image URLs (`?width=X&format=webply&optimize=medium`)
+- **Uses default breakpoints**: 2000px (desktop) and 750px (mobile)
+
+### Why This Utility Extends EDS
+
+While `createOptimizedPicture()` is powerful, it has limitations:
+
+1. **Fixed default breakpoints** - 2000px/750px don't fit all use cases (too large for cards, too small for heroes)
+2. **Manual width calculation** - You must calculate retina widths yourself (400px display = 800px request)
+3. **Repetitive code** - Every block needs the same boilerplate to call `createOptimizedPicture()`
+4. **No presets** - Common patterns (cards, heroes, thumbnails) must be reimplemented each time
+
+**This utility solves these problems** by providing:
+
+- ✅ **Preset configurations** for common use cases (hero, card, thumbnail, etc.)
+- ✅ **Automatic retina scaling** - specify display width, get 2x request width automatically
+- ✅ **Simpler API** - `optimizeImageByDisplaySize(img, [{ displayWidth: 400 }])`
+- ✅ **Reusable patterns** - one line of code instead of repetitive boilerplate
+- ✅ **Full control** - override multiplier, breakpoints, eager loading as needed
+
+Think of it as a **developer-friendly wrapper** around EDS's built-in optimization that makes it easier to use correctly and consistently across your project.
+
 ## Quick Start
 
 ### Using Presets (Recommended)
