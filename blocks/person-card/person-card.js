@@ -77,16 +77,27 @@ export default function decorate(block) {
       }
     }
 
-    // Image: Optimize image size by adding query parameters
+    // Image: Optimize image size by updating all sources in the picture element
     if (key === 'image') {
-      const img = valueCell.querySelector('img');
-      if (img && img.src) {
-        // Add width parameter for automatic resizing (2x for retina displays)
-        // EDS will automatically serve optimized WebP format
-        const url = new URL(img.src);
-        url.searchParams.set('width', '800'); // 2x the 400px display size for retina
-        url.searchParams.set('format', 'webply'); // Optimized WebP
-        img.src = url.toString();
+      const picture = valueCell.querySelector('picture');
+      if (picture) {
+        // Update all <source> elements (EDS creates these for responsive images)
+        picture.querySelectorAll('source').forEach((source) => {
+          const srcset = source.getAttribute('srcset');
+          if (srcset) {
+            // Replace width parameter in srcset (e.g., width=2000 -> width=800)
+            const updatedSrcset = srcset.replace(/width=\d+/, 'width=800');
+            source.setAttribute('srcset', updatedSrcset);
+          }
+        });
+
+        // Also update the <img> fallback
+        const img = picture.querySelector('img');
+        if (img && img.src) {
+          const url = new URL(img.src);
+          url.searchParams.set('width', '800'); // 2x the 400px display size for retina
+          img.src = url.toString();
+        }
       }
     }
 
