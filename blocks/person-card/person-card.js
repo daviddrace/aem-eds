@@ -1,3 +1,5 @@
+import { optimizeImage } from '../../scripts/image-utils.js';
+
 /**
  * person-card block — card element with information about a person
  *
@@ -77,27 +79,15 @@ export default function decorate(block) {
       }
     }
 
-    // Image: Optimize image size by updating all sources in the picture element
+    // Image: Replace with optimized picture using custom breakpoints
+    // Person card max-width is 400px, so we use 800px (2x for retina) for all sizes
     if (key === 'image') {
-      const picture = valueCell.querySelector('picture');
-      if (picture) {
-        // Update all <source> elements (EDS creates these for responsive images)
-        picture.querySelectorAll('source').forEach((source) => {
-          const srcset = source.getAttribute('srcset');
-          if (srcset) {
-            // Replace width parameter in srcset (e.g., width=2000 -> width=800)
-            const updatedSrcset = srcset.replace(/width=\d+/, 'width=800');
-            source.setAttribute('srcset', updatedSrcset);
-          }
-        });
-
-        // Also update the <img> fallback
-        const img = picture.querySelector('img');
-        if (img && img.src) {
-          const url = new URL(img.src);
-          url.searchParams.set('width', '800'); // 2x the 400px display size for retina
-          img.src = url.toString();
-        }
+      const img = valueCell.querySelector('img');
+      if (img) {
+        optimizeImage(img, [
+          { media: '(min-width: 600px)', width: '800' }, // Desktop: 2x 400px
+          { width: '800' }, // Mobile: same size (card doesn't shrink much)
+        ]);
       }
     }
 

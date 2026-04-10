@@ -1,3 +1,5 @@
+import { optimizeImages } from '../../scripts/image-utils.js';
+
 /**
  * Sidebar CTA block — promo box with image, heading, description, and button.
  * Authored as a single-row block in Google Docs.
@@ -8,6 +10,8 @@
  * @param {Element} block
  */
 export default function decorate(block) {
+  // Optimize images before processing (sidebar preset: max 300px desktop, 800px mobile)
+  optimizeImages(block, 'sidebar');
   const rows = [...block.children];
 
   rows.forEach((row) => {
