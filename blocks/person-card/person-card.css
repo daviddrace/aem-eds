@@ -1,18 +1,20 @@
-.section div.person-card-wrapper {
+/* Base styling - applied to the block element itself */
+.person-card {
   display: block;
-  max-width:400px;
+  max-width: 400px;
   background-color: #fff;
   padding: 1rem;
   border-radius: 12px;
   border: solid 1px #eee;
 }
 
-.person-card-label{
-  display:none;
+.person-card-label {
+  display: none;
 }
 
-.person-card-value, .person-card-value > *{
-  margin:0;
+.person-card-value,
+.person-card-value > * {
+  margin: 0;
 }
 
 .person-card .person-name {
@@ -24,14 +26,10 @@
  * Author as: Person Card (Dark)
  * Adds dark background and light text
  */
-.person-card.dark .person-card-wrapper {
+.person-card.dark {
   background-color: #333;
   color: #fff;
   border-color: #555;
-}
-
-.person-card.dark .person-name {
-  color: #fff;
 }
 
 .person-card.dark a {
@@ -42,7 +40,7 @@
  * Author as: Person Card (Compact)
  * Reduces padding and font sizes
  */
-.person-card.compact .person-card-wrapper {
+.person-card.compact {
   max-width: 300px;
   padding: 0.5rem;
 }
@@ -59,7 +57,7 @@
  * Author as: Person Card (Highlighted)
  * Adds accent border and background
  */
-.person-card.highlighted .person-card-wrapper {
+.person-card.highlighted {
   background-color: #f0f8ff;
   border: 2px solid #0066cc;
   box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
@@ -74,7 +72,7 @@
  * Displays image and content side-by-side
  * Requires JavaScript to restructure DOM
  */
-.person-card.horizontal .person-card-wrapper {
+.person-card.horizontal {
   max-width: 600px;
   display: flex;
   gap: 1.5rem;
