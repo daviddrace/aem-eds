@@ -18,6 +18,11 @@ import { optimizeImageByDisplaySize } from '../../scripts/image-utils.js';
  * @param {Element} block
  */
 export default function decorate(block) {
+  // Check for block variations (added as CSS classes by EDS)
+  // Examples: "Person Card (Dark)" -> block.classList.contains('dark')
+  //           "Person Card (Horizontal)" -> block.classList.contains('horizontal')
+  const isHorizontal = block.classList.contains('horizontal');
+
   // Define the order fields should appear in the final output
   // This ensures consistent display even if authors create rows in a different order
   const FIELD_ORDER = ['name', 'role', 'email', 'phone', 'image'];
@@ -93,4 +98,23 @@ export default function decorate(block) {
     // STEP 5: Append the decorated cell to the block in the correct order
     block.appendChild(valueCell);
   });
+
+  // STEP 6: Handle variations that require DOM restructuring
+  // Horizontal variation: Split image and content into two columns
+  if (isHorizontal) {
+    const imageEl = block.querySelector('.person-image');
+    const contentEls = [...block.children].filter((el) => !el.classList.contains('person-image'));
+
+    if (imageEl && contentEls.length > 0) {
+      // Create wrapper for content (name, role, email, phone)
+      const contentWrapper = document.createElement('div');
+      contentWrapper.classList.add('person-card-content');
+      contentEls.forEach((el) => contentWrapper.appendChild(el));
+
+      // Clear and rebuild with image + content side-by-side
+      block.innerHTML = '';
+      block.appendChild(imageEl);
+      block.appendChild(contentWrapper);
+    }
+  }
 }

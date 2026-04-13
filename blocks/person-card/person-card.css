@@ -20,4 +20,79 @@
   font-size: 1.25rem;
 }
 
+/* Variation: Dark theme
+ * Author as: Person Card (Dark)
+ * Adds dark background and light text
+ */
+.person-card.dark .person-card-wrapper {
+  background-color: #333;
+  color: #fff;
+  border-color: #555;
+}
 
+.person-card.dark .person-name {
+  color: #fff;
+}
+
+.person-card.dark a {
+  color: #6db3f2;
+}
+
+/* Variation: Compact layout
+ * Author as: Person Card (Compact)
+ * Reduces padding and font sizes
+ */
+.person-card.compact .person-card-wrapper {
+  max-width: 300px;
+  padding: 0.5rem;
+}
+
+.person-card.compact .person-name {
+  font-size: 1rem;
+}
+
+.person-card.compact .person-card-value {
+  font-size: 0.875rem;
+}
+
+/* Variation: Highlighted
+ * Author as: Person Card (Highlighted)
+ * Adds accent border and background
+ */
+.person-card.highlighted .person-card-wrapper {
+  background-color: #f0f8ff;
+  border: 2px solid #0066cc;
+  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.1);
+}
+
+.person-card.highlighted .person-name {
+  color: #0066cc;
+}
+
+/* Variation: Horizontal layout
+ * Author as: Person Card (Horizontal)
+ * Displays image and content side-by-side
+ * Requires JavaScript to restructure DOM
+ */
+.person-card.horizontal .person-card-wrapper {
+  max-width: 600px;
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.person-card.horizontal .person-image {
+  flex-shrink: 0;
+  width: 150px;
+}
+
+.person-card.horizontal .person-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.person-card.horizontal .person-card-content {
+  flex: 1;
+  min-width: 0;
+}
