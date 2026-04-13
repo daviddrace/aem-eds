@@ -8,10 +8,6 @@
   border: solid 1px #eee;
 }
 
-.person-card-label {
-  display: none;
-}
-
 .person-card-value,
 .person-card-value > * {
   margin: 0;
